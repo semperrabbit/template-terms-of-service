@@ -1,10 +1,79 @@
 require('dotenv').config();
 
-const express = require('express');
+const axios      = require('axios');
 const bodyParser = require('body-parser');
-const onboard = require('./onboard');
+const express    = require('express');
+const qs         = require('querystring');
 
 const app = express();
+
+const message = {
+	token: process.env.SLACK_TOKEN,
+	as_user: true,
+	link_names: true,
+	text: `Welcome to the Screeps Slack! We\'re glad you\'re here.
+
+Below are a few do\'s and dont\'s for the slack. Note that the Do Not\'s include bannable offenses based off of severity and repeated offenses. All warnings, temporary bans and permanant bans are at the moderators\' discretion.
+
+The community here is usually a friendly and helpful group, but should you run into any issues, please bring them up to the moderators.`,
+	attachments: JSON.stringify([
+		{
+			title: 'Do:',
+			text: `* Check #announcements for updates, but do not respond to post or attempt discussion in that channel. You may react to posts with emojis
+* Discuss announcements in #announcements-any
+* Ask for assistance in #help, not #general
+* Ask permission before removing pinned posts or modifying integrations
+* Try to keep the discussions in line with the channel you\'re in`,
+			color: '#74c8ed',
+		},
+			title: 'Do Not:',
+			text: `* Remove others' pinned posts without permission
+* Remove/reconfigure others' integrations without permissions
+* Disrespect people who were asking for help in #help
+* Threaten physical injury or harass anyone
+* Repeatedly provoke serious arguments
+* Refuse to disengage from serious arguments when asked to by an admin`,
+			color: '#74c8ed',
+		},
+		{
+			title: 'Moderators',
+			text: `@atavus
+@daboross
+@dissi  (community manager too)
+@o4apuk (community manager too)
+@semperrabbit`,
+			color: '#74c8ed',
+		}]),
+		{
+			title: 'Helpful Links:',
+			text: `*API*: http://docs.screeps.com/api/
+*Game source code*: https://github.com/Screeps
+*Alliances*: http://www.leagueofautomatednations.com
+*Wiki*: https://wiki.screepspl.us
+*Third party tools*: http://docs.screeps.com/third-party.html
+*Screeps World*: https://screepsworld.com/
+*Spawning room recommendation*: https://screepsworld.com/2017/07/warning-novice-zones-are-lies-where-to-spawn-as-a-noob/`,
+		}]),
+};
+
+const postResult = result => console.log(result.data);
+
+/*
+ * send the initial message
+*/
+const initialMessage = (teamId, userId) => {
+	// enable testing 
+	if(process.env.TEST_USER && userId !== process.env.TEST_USER){
+		return;
+	}
+
+	// send the default message as a DM to the user
+	message.channel = userId;
+	const params = qs.stringify(message);
+	const sendMessage = axios.post('https://slack.com/api/chat.postMessage', params);
+	sendMessage.then(postResult);
+};
+
 
 /*
  * parse application/x-www-form-urlencoded && application/json
@@ -13,9 +82,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-  res.send('<h2>The Welcome/Terms of Service app is running</h2> <p>Follow the' +
-  ' instructions in the README to configure the Slack App and your' +
-  ' environment variables.</p>');
+  res.send('<h2>The Screeps Slack WelcomeBot is running</h2> <p>If there are any issues, please contact @semperrabbit in the slack.</p>');
 });
 
 /*
@@ -47,20 +114,6 @@ app.post('/events', (req, res) => {
     }
     default: { res.sendStatus(500); }
   }
-});
-
-/*
- * Endpoint to receive events from interactive message on Slack. Checks the
- * verification token before continuing.
- */
-app.post('/interactive-message', (req, res) => {
-  const { token, user, team } = JSON.parse(req.body.payload);
-  if (token === process.env.SLACK_VERIFICATION_TOKEN) {
-    // simplest case with only a single button in the application
-    // check `callback_id` and `value` if handling multiple buttons
-    onboard.accept(user.id, team.id);
-    res.send({ text: 'Thank you! The Terms of Service have been accepted.' });
-  } else { res.sendStatus(500); }
 });
 
 app.listen(process.env.PORT, () => {
