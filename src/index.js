@@ -26,6 +26,7 @@ The community here is usually a friendly and helpful group, but should you run i
 * Try to keep the discussions in line with the channel you\'re in`,
 			color: '#74c8ed',
 		},
+		{
 			title: 'Do Not:',
 			text: `* Remove others' pinned posts without permission
 * Remove/reconfigure others' integrations without permissions
@@ -43,7 +44,7 @@ The community here is usually a friendly and helpful group, but should you run i
 @o4apuk (community manager too)
 @semperrabbit`,
 			color: '#74c8ed',
-		}]),
+		},
 		{
 			title: 'Helpful Links:',
 			text: `*API*: http://docs.screeps.com/api/
