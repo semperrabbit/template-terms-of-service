@@ -33,15 +33,16 @@ The community here is usually a friendly and helpful group, but should you run i
 * Disrespect people who were asking for help in #help
 * Threaten physical injury or harass anyone
 * Repeatedly provoke serious arguments
-* Refuse to disengage from serious arguments when asked to by an admin`,
+* Refuse to disengage from serious arguments when asked to by an admin
+* Engage in sexual harassment`,
 			color: '#74c8ed',
 		},
 		{
 			title: 'Moderators',
 			text: `@atavus
 @daboross
-@dissi  (community manager too)
-@o4apuk (community manager too)
+@dissi  (community manager)
+@o4apuk (community manager)
 @semperrabbit`,
 			color: '#74c8ed',
 		},
